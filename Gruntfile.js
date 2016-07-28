@@ -28,14 +28,23 @@ module.exports = function(grunt) {
         latedef  : true,
         laxbreak : true,
         nonbsp   : true,
-        strict   : true,
+        sub      : true, /* deprecated! */
         undef    : true,
         unused   : false,
         devel    : true
-        /* globals: { FontFaceObserver: false } */
       },
-      site: {
-        src: ['src/**/*.js']
+      dom: { src: ['src/dom.js'] },
+      ruler: {
+        options: {
+          globals: { dom: false }
+        },
+        src: ['src/ruler.js']
+      },
+      observer: {
+        options: {
+          globals: { dom: false, fontface: true, Ruler: false }
+        },
+        src: ['src/observer.js']
       }
     },
     
