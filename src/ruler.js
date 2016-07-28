@@ -1,4 +1,3 @@
-var dom = require('./dom');
 var fontface = {};
 
 /**
@@ -125,5 +124,3 @@ Ruler.prototype.onResize = function (callback) {
   dom.addListener(this.expandable, 'scroll', onScroll);
   this.reset();
 };
-
-module.exports = fontface.Ruler;

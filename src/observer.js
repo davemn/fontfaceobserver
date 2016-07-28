@@ -1,13 +1,3 @@
-var dom = require('./dom');
-
-var fontface = { 
-  Ruler: require('./ruler') 
-};
-
-// ---
-
-var Ruler = fontface.Ruler;
-
 /**
  * @constructor
  *
@@ -306,7 +296,3 @@ Observer.prototype.load = function (text, timeout) {
     }
   });
 };
-
-module.exports = fontface.Observer;
-if(typeof window !== 'undefined')
-  window.FontFaceObserver = fontface.Observer;

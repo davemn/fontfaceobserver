@@ -1,18 +1,20 @@
+function makeLocals(grunt, srcFiles){
+  return function(){
+    var src = '';
+    for(var i=0; i < srcFiles.length; i++){
+      src += grunt.file.read('./src/'+srcFiles[i]) + '\n';
+    }
+    
+    return { srcFiles: src };
+  };
+}
+
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
     clean: ['dist'],
     
-    // copy: {
-    //   dist: {
-    //     files: [
-    //       { expand: true, dest: 'dist', src: ['index.{html,js}'] },
-    //       { expand: true, dest: 'dist/pages', cwd: 'pages', src: ['*.html', '*.css', '*.js', '*.obj', '*.png'] },
-    //     ]
-    //   }
-    // },
-        
     jshint: {
       options: {
         asi      : true,
@@ -33,22 +35,27 @@ module.exports = function(grunt) {
         /* globals: { FontFaceObserver: false } */
       },
       site: {
-        src: ['dom.js', 'ruler.js', 'FontFaceObserver.js']
+        src: ['src/**/*.js']
       }
     },
     
-    browserify: {
-      site: {
-        files: {
-          'dist/bundle.js': ['dom.js', 'ruler.js', 'FontFaceObserver.js']
-        }
+    /* Underscore templates, for using Grunt templates in plain JS files */
+    template: {
+      full: {
+        options: { data: makeLocals(grunt, ['dom.js', 'ruler.js', 'observer.js']) },
+        files: { 'dist/FontFaceObserver.js': ['FontFaceObserver.js.template'] }
+      }
+    },
+    
+    uglify: {
+      dist: {
+        files: { 'dist/FontFaceObserver.min.js': ['dist/FontFaceObserver.js'] }
       }
     }
   });
 
   require('load-grunt-tasks')(grunt);
   
-  grunt.registerTask('strict', ['clean', 'jshint', 'browserify']);
-  
-  grunt.registerTask('default', ['clean', 'browserify']);
+  grunt.registerTask('strict', ['clean', 'jshint', 'template', 'uglify']);
+  grunt.registerTask('default', ['clean', 'template', 'uglify']);
 };

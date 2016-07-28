@@ -135,5 +135,3 @@ dom.waitForBody = function (callback) {
     }
   }
 };
-
-module.exports = dom;
