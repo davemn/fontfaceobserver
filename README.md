@@ -5,6 +5,15 @@ I've modified it to expose its API via a browser-friendly [Universal Module Defi
 This is useful if you're using a frontend module loader, like [Browserify](http://browserify.org/), [webpack](https://webpack.github.io/), or [RequireJS](http://requirejs.org/).
 Of course, you can always just put it in a `<script>` tag, and everything works as expected.
 
+**Building**
+
+```bash
+$ npm install
+$ grunt
+```
+
+Include `dist/FontFaceObserver[.min].js` like you would any other Javascript library.
+
 **Caveats**
 
 The original code makes heavy use of Google's Closure compiler, and uses a builtin Promises polyfill.
