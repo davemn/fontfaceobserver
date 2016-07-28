@@ -1,91 +1,54 @@
-var extend = require('extend');
-
-module.exports = function (grunt) {
-  var compilerOptions = {
-    compilation_level: 'ADVANCED_OPTIMIZATIONS',
-    warning_level: 'VERBOSE',
-    summary_detail_level: 3,
-    language_in: 'ECMASCRIPT5_STRICT',
-    output_wrapper: '(function(){%output%}());',
-    use_types_for_optimization: true,
-    externs: ['externs-commonjs.js']
-  };
-
+module.exports = function(grunt) {
   grunt.initConfig({
-    clean: {
-      options: {
-        force: true
-      },
-      build: ['build']
-    },
-    exec: {
-      test: 'phantomjs node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js test/index.html',
-      deps: 'calcdeps -i src -i exports.js -p src -p ./vendor/google/base.js -p node_modules/closure-dom/src/dom.js -o deps > test/deps.js'
-    },
+    pkg: grunt.file.readJSON('package.json'),
+
+    clean: ['dist'],
+    
+    // copy: {
+    //   dist: {
+    //     files: [
+    //       { expand: true, dest: 'dist', src: ['index.{html,js}'] },
+    //       { expand: true, dest: 'dist/pages', cwd: 'pages', src: ['*.html', '*.css', '*.js', '*.obj', '*.png'] },
+    //     ]
+    //   }
+    // },
+        
     jshint: {
-      all: ['src/**/*.js'],
       options: {
-        // ... better written as dot notation
-        '-W069': true,
-
-        // type definitions
-        '-W030': true,
-
-        // Don't make functions within loops
-        '-W083': true,
-
-        // Wrap the /regexp/ literal in parens to disambiguate the slash operator
-        '-W092': true
+        asi      : true,
+        browser  : true,
+        browserify: true,
+        eqeqeq   : false,
+        eqnull   : true,
+        esversion: 6,
+        expr     : true,
+        jquery   : true,
+        latedef  : true,
+        laxbreak : true,
+        nonbsp   : true,
+        strict   : true,
+        undef    : true,
+        unused   : false,
+        devel    : true
+        /* globals: { FontFaceObserver: false } */
+      },
+      site: {
+        src: ['dom.js', 'ruler.js', 'FontFaceObserver.js']
       }
     },
-    closurecompiler: {
-      dist: {
+    
+    browserify: {
+      site: {
         files: {
-          'fontfaceobserver.js': ['src/**/*.js', 'exports.js', 'node_modules/closure-dom/src/dom.js']
-        },
-        options: extend({}, compilerOptions, {
-          define: 'DEBUG=false'
-        })
-      },
-      compile: {
-        files: {
-          'build/fontfaceobserver.js': ['src/**/*.js', 'exports.js', 'node_modules/closure-dom/src/dom.js'],
-        },
-        options: extend({}, compilerOptions, {
-          define: 'DEBUG=false'
-        })
-      },
-      debug: {
-        files: {
-          'build/fontfaceobserver.debug.js': ['src/**/*.js', 'exports.js', 'node_modules/closure-dom/src/dom.js']
-        },
-        options: extend({}, compilerOptions, {
-          debug: true,
-          formatting: ['PRETTY_PRINT', 'PRINT_INPUT_DELIMITER']
-        })
-      }
-    },
-    concat: {
-      dist_promises: {
-        src: ['node_modules/promis/promise.js', 'build/fontfaceobserver.js'],
-        dest: 'fontfaceobserver.js'
-      },
-      dist: {
-        src: ['build/fontfaceobserver.js'],
-        dest: 'fontfaceobserver.standalone.js'
+          'dist/bundle.js': ['dom.js', 'ruler.js', 'FontFaceObserver.js']
+        }
       }
     }
   });
 
-  grunt.loadNpmTasks('grunt-closurecompiler');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-exec');
-
-  grunt.registerTask('compile', ['closurecompiler:compile']);
-  grunt.registerTask('debug', ['closurecompiler:debug']);
-  grunt.registerTask('default', ['compile']);
-  grunt.registerTask('test', ['jshint', 'exec:test']);
-  grunt.registerTask('dist', ['clean', 'closurecompiler:compile', 'concat:dist', 'concat:dist_promises']);
+  require('load-grunt-tasks')(grunt);
+  
+  grunt.registerTask('strict', ['clean', 'jshint', 'browserify']);
+  
+  grunt.registerTask('default', ['clean', 'browserify']);
 };
